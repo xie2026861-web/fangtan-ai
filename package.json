@@ -1,0 +1,46 @@
+{
+  "name": "fangtan-ai",
+  "version": "1.0.0",
+  "description": "房探AI - 房产经纪人专属AI营销智能体矩阵",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspaces",
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "test:unit": "npm run test:unit --workspaces",
+    "test:integration": "npm run test:integration --workspaces",
+    "test:e2e": "npm run test:e2e --workspaces",
+    "test:coverage": "npm run test:coverage --workspaces",
+    "lint": "npm run lint --workspaces",
+    "lint:fix": "npm run lint:fix --workspaces",
+    "clean": "npm run clean --workspaces",
+    "docker:up": "docker-compose -f docker-compose.local.yml up -d",
+    "docker:down": "docker-compose -f docker-compose.local.yml down",
+    "docker:logs": "docker-compose -f docker-compose.local.yml logs -f"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "packageManager": "npm@10.0.0",
+  "keywords": [
+    "fangtan-ai",
+    "real-estate",
+    "ai-agent",
+    "saas",
+    "marketing"
+  ],
+  "author": "FangTan AI Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fangtan-ai/fangtan-ai.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fangtan-ai/fangtan-ai/issues"
+  },
+  "homepage": "https://github.com/fangtan-ai/fangtan-ai"
+}

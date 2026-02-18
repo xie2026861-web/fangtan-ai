@@ -1,0 +1,235 @@
+version: '3.8'
+
+services:
+  # PostgreSQL - 核心业务数据库
+  postgres:
+    image: postgres:15-alpine
+    container_name: fangtan-postgres
+    environment:
+      POSTGRES_USER: fangtan
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fangtan_password}
+      POSTGRES_DB: fangtan_dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fangtan -d fangtan_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - fangtan-network
+
+  # MongoDB - 客户画像和日志
+  mongo:
+    image: mongo:7-alpine
+    container_name: fangtan-mongo
+    environment:
+      MONGO_INITDB_DATABASE: fangtan_dev
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-fangtan_mongo_password}
+    volumes:
+      - mongo_data:/data/db
+      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - fangtan-network
+
+  # Redis - 缓存和会话
+  redis:
+    image: redis:7-alpine
+    container_name: fangtan-redis
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-fangtan_redis_password}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - fangtan-network
+
+  # Elasticsearch - 全文检索
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: fangtan-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    networks:
+      - fangtan-network
+
+  # Kibana - Elasticsearch可视化
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: fangtan-kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - fangtan-network
+
+  # ClickHouse - 数据仓库
+  clickhouse:
+    image: clickhouse/clickhouse-server:23.11-alpine
+    container_name: fangtan-clickhouse
+    environment:
+      CLICKHOUSE_DB: fangtan_dev
+      CLICKHOUSE_USER: fangtan
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-fangtan_clickhouse_password}
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    healthcheck:
+      test: ["CMD", "clickhouse-client", "--query", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - fangtan-network
+
+  # Milvus - 向量数据库
+  milvus:
+    image: milvusdb/milvus:v2.3.4
+    container_name: fangtan-milvus
+    command: ["milvus", "run", "standalone"]
+    environment:
+      - ETCD_USE_EMBEDDED=true
+      - MINIO_ADDRESS=minio:9000
+    volumes:
+      - milvus_data:/var/lib/milvus
+    ports:
+      - "19530:19530"
+      - "9091:9091"
+    depends_on:
+      - minio
+    networks:
+      - fangtan-network
+
+  # MinIO - 对象存储（Milvus依赖）
+  minio:
+    image: minio/minio:RELEASE.2023-12-20T01-00-02Z
+    container_name: fangtan-minio
+    command: minio server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_USER:-fangtan_minio_admin}
+      MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD:-fangtan_minio_password}
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    networks:
+      - fangtan-network
+
+  # Kafka - 消息队列
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: fangtan-kafka
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    volumes:
+      - kafka_data:/var/lib/kafka
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    networks:
+      - fangtan-network
+
+  # Zookeeper - Kafka依赖
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: fangtan-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    volumes:
+      - zookeeper_data:/var/lib/zookeeper
+    networks:
+      - fangtan-network
+
+  # Redis Commander - Redis可视化
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: fangtan-redis-commander
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-fangtan_redis_password}
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    networks:
+      - fangtan-network
+
+  # pgAdmin - PostgreSQL可视化
+  pgadmin:
+    image: dpage/pgadmin4:8.0
+    container_name: fangtan-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@fangtan.ai
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-fangtan_pgadmin_password}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - fangtan-network
+
+volumes:
+  postgres_data:
+  mongo_data:
+  redis_data:
+  elasticsearch_data:
+  clickhouse_data:
+  milvus_data:
+  minio_data:
+  kafka_data:
+  zookeeper_data:
+  redis_commander_data:
+  pgadmin_data:
+
+networks:
+  fangtan-network:
+    driver: bridge

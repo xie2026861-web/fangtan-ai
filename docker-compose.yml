@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # API Gateway
+  api-gateway:
+    build:
+      context: ./apps/api-gateway
+      dockerfile: Dockerfile
+    container_name: fangtan-api-gateway
+    ports:
+      - "3001:3001"
+    environment:
+      - DATABASE_URL=postgresql://fangtan:fangtan_password@postgres:5432/fangtan
+      - REDIS_URL=redis://:fangtan_redis_password@redis:6379
+      - JWT_SECRET=${JWT_SECRET:-fangtan-secret-key}
+      - JWT_EXPIRES_IN=7d
+      - NODE_ENV=production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - fangtan-network
+    restart: unless-stopped
+
+  # Web Frontend
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: fangtan-web
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://api-gateway:3001
+      - NODE_ENV=production
+    depends_on:
+      - api-gateway
+    networks:
+      - fangtan-network
+    restart: unless-stopped
+
+networks:
+  fangtan-network:
+    driver: bridge

@@ -1,0 +1,483 @@
+// Prisma Schema for Fangtan AI
+// Generated for API Gateway
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== 用户模型 ====================
+model User {
+  id                String    @id @default(uuid())
+  email             String    @unique
+  password          String
+  name              String
+  phone             String?   @unique
+  avatar            String?
+  role              UserRole  @default(AGENT)
+  status            UserStatus @default(ACTIVE)
+  emailVerified     Boolean   @default(false)
+  phoneVerified     Boolean   @default(false)
+  
+  // 订阅信息
+  subscriptionId    String?
+  subscriptionTier  SubscriptionTier @default(FREE)
+  subscriptionExpiresAt DateTime?
+  
+  // 统计
+  clientCount       Int      @default(0)
+  monthlyReachCount Int      @default(0)
+  monthlyContentCount Int    @default(0)
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  lastLoginAt       DateTime?
+  
+  // 关系
+  sessions          Session[]
+  customers         Customer[]
+  reachTasks        ReachTask[]
+  contents          Content[]
+  analytics         Analytics[]
+  
+  @@index([email])
+  @@index([phone])
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  MANAGER
+  AGENT
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  PENDING
+}
+
+enum SubscriptionTier {
+  FREE
+  BASIC
+  PROFESSIONAL
+  ENTERPRISE
+}
+
+// ==================== 会话模型 ====================
+model Session {
+  id           String   @id @default(uuid())
+  userId       String
+  token        String   @unique
+  refreshToken String?
+  ip           String?
+  userAgent    String?
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([token])
+}
+
+// ==================== 客户模型 ====================
+model Customer {
+  id                String        @id @default(uuid())
+  ownerId           String
+  
+  // 基础信息
+  name              String
+  phone             String?       @unique
+  wechat            String?
+  email             String?
+  
+  // 来源
+  source            CustomerSource @default(MANUAL)
+  sourceDetail      String?
+  
+  // 标签
+  tags              String[]
+  customTags        Json?
+  
+  // 意向
+  intentLevel       IntentLevel    @default(UNKNOWN)
+  budget            Json?
+  preferredAreas    String[]
+  preferredTypes    String[]
+  searchHistory     Json?
+  
+  // 画像
+  portrait          Json?
+  
+  // 状态
+  status            CustomerStatus @default(POTENTIAL)
+  blacklist         Boolean        @default(false)
+  doNotContact      Boolean        @default(false)
+  
+  // 统计
+  totalReachCount   Int           @default(0)
+  lastReachAt       DateTime?
+  lastContactResult String?
+  
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  
+  // 关系
+  owner             User          @relation(fields: [ownerId], references: [id])
+  reaches           ReachTask[]
+  interactions      Interaction[]
+  
+  @@index([ownerId])
+  @@index([phone])
+  @@index([wechat])
+}
+
+enum CustomerSource {
+  MANUAL
+  IMPORT
+  API
+  PARTNER
+  CRAWLER
+}
+
+enum CustomerStatus {
+  POTENTIAL
+  QUALIFIED
+  NEGOTIATING
+  CLOSED
+  LOST
+  BLACKLIST
+}
+
+enum IntentLevel {
+  HOT
+  WARM
+  COLD
+  UNKNOWN
+}
+
+// ==================== 触达任务模型 ====================
+model ReachTask {
+  id              String        @id @default(uuid())
+  ownerId         String
+  customerId      String?
+  
+  // 任务信息
+  type            ReachType     @default(CALL)
+  channel         String
+  status          ReachStatus   @default(PENDING)
+  priority        Int           @default(0)
+  
+  // 内容
+  scriptId        String?
+  content         Json?
+  templateId      String?
+  
+  // AI配置
+  aiEnabled       Boolean       @default(true)
+  aiModel         String?
+  
+  // 计划
+  scheduledAt    DateTime?
+  startedAt      DateTime?
+  completedAt    DateTime?
+  expiresAt      DateTime?
+  
+  // 结果
+  result          Json?
+  duration        Int?
+  recordingUrl    String?
+  transcript      String?
+  
+  // 统计
+  cost            Float?
+  tokenUsage      Int?
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  // 关系
+  owner           User          @relation(fields: [ownerId], references: [id])
+  customer        Customer?     @relation(fields: [customerId], references: [id])
+  interactions    Interaction[]
+  
+  @@index([ownerId])
+  @@index([customerId])
+  @@index([status])
+  @@index([scheduledAt])
+}
+
+enum ReachType {
+  CALL
+  WECHAT
+  SMS
+  EMAIL
+  SOCIAL
+}
+
+enum ReachStatus {
+  PENDING
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  CANCELLED
+  EXPIRED
+}
+
+// ==================== 内容模型 ====================
+model Content {
+  id              String        @id @default(uuid())
+  ownerId         String
+  
+  // 内容信息
+  type            ContentType   @default(TEXT)
+  title           String
+  body            String
+  mediaUrls       String[]
+  attachmentUrls  String?
+  
+  // AI生成
+  aiGenerated     Boolean       @default(false)
+  prompt          String?
+  model           String?
+  tokenUsage      Int?
+  
+  // 平台
+  platforms       String[]
+  platformPosts   Json?
+  
+  // 合规
+  compliance      Json?
+  complianceStatus ComplianceStatus @default(PENDING)
+  complianceNote   String?
+  
+  // 状态
+  status          ContentStatus @default(DRAFT)
+  publishedAt     DateTime?
+  
+  // 统计
+  views           Int           @default(0)
+  likes           Int           @default(0)
+  shares          Int           @default(0)
+  comments        Int           @default(0)
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  // 关系
+  owner           User          @relation(fields: [ownerId], references: [id])
+  
+  @@index([ownerId])
+  @@index([status])
+  @@index([type])
+}
+
+enum ContentType {
+  TEXT
+  IMAGE
+  VIDEO
+  ARTICLE
+  POST
+  HOUSING_DETAIL
+}
+
+enum ContentStatus {
+  DRAFT
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ComplianceStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  WARNING
+}
+
+// ==================== 交互记录模型 ====================
+model Interaction {
+  id              String          @id @default(uuid())
+  customerId      String
+  reachTaskId     String?
+  
+  // 交互信息
+  type            InteractionType
+  channel         String
+  direction       InteractionDirection
+  
+  // 内容
+  content         String?
+  sentiment       Sentiment?
+  
+  // 结果
+  outcome         String?
+  followUp        Boolean         @default(false)
+  followUpDate    DateTime?
+  
+  // AI分析
+  aiAnalysis      Json?
+  
+  createdAt       DateTime        @default(now())
+  
+  // 关系
+  customer        Customer        @relation(fields: [customerId], references: [id])
+  reachTask       ReachTask?      @relation(fields: [reachTaskId], references: [id])
+  
+  @@index([customerId])
+  @@index([createdAt])
+}
+
+enum InteractionType {
+  CALL
+  WECHAT
+  SMS
+  EMAIL
+  MEETING
+  VISIT
+  OTHER
+}
+
+enum InteractionDirection {
+  INBOUND
+  OUTBOUND
+}
+
+enum Sentiment {
+  POSITIVE
+  NEUTRAL
+  NEGATIVE
+}
+
+// ==================== 分析模型 ====================
+model Analytics {
+  id              String        @id @default(uuid())
+  ownerId         String
+  
+  // 指标
+  type            AnalyticsType
+  period          String
+  date            DateTime      @db.Date
+  
+  // 数据
+  metrics         Json
+  
+  createdAt       DateTime      @default(now())
+  
+  // 关系
+  owner           User          @relation(fields: [ownerId], references: [id])
+  
+  @@unique([ownerId, type, date])
+  @@index([ownerId])
+  @@index([date])
+}
+
+enum AnalyticsType {
+  DAILY_REACH
+  WEEKLY_REACH
+  MONTHLY_REACH
+  DAILY_CONTENT
+  WEEKLY_CONTENT
+  MONTHLY_CONTENT
+  CONVERSION
+  PERFORMANCE
+}
+
+// ==================== 系统配置模型 ====================
+model SystemConfig {
+  id              String        @id @default(uuid())
+  key             String        @unique
+  value           Json
+  description     String?
+  updatedAt       DateTime      @updatedAt
+  
+  @@index([key])
+}
+
+// ==================== 审计日志模型 ====================
+model AuditLog {
+  id              String        @id @default(uuid())
+  userId          String?
+  action          String
+  resource        String
+  resourceId      String?
+  oldValue        Json?
+  newValue        Json?
+  ip              String?
+  userAgent       String?
+  createdAt       DateTime      @default(now())
+  
+  @@index([userId])
+  @@index([resource])
+  @@index([createdAt])
+}
+
+// ==================== 订阅计划模型 ====================
+model SubscriptionPlan {
+  id              String        @id @default(uuid())
+  name            String
+  tier            SubscriptionTier @unique
+  price           Float
+  interval        String        // monthly, yearly
+  features        Json
+  limits          Json
+  
+  // AI限制
+  aiCallMinutes   Int           @default(0)
+  aiMessageCount  Int           @default(0)
+  aiImageCount    Int           @default(0)
+  
+  // 客户限制
+  maxClients      Int           @default(0)
+  
+  // 状态
+  active          Boolean       @default(true)
+  sortOrder       Int           @default(0)
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+// ==================== 支付记录模型 ====================
+model Payment {
+  id              String        @id @default(uuid())
+  userId          String
+  subscriptionId  String?
+  
+  // 支付信息
+  amount          Float
+  currency        String        @default("CNY")
+  status          PaymentStatus @default(PENDING)
+  method          String?
+  
+  // 渠道
+  provider        String?
+  providerId      String?
+  
+  // 时间
+  paidAt          DateTime?
+  expiredAt       DateTime?
+  
+  createdAt       DateTime      @default(now())
+  
+  @@index([userId])
+  @@index([status])
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+  CANCELLED
+}
