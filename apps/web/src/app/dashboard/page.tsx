@@ -1,201 +1,309 @@
-'use client'
+'use client';
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { Brain, Users, Phone, FileText, BarChart3, Shield, ArrowRight, TrendingUp, Target, Zap } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { useAuthStore } from '@/stores/auth'
+import { Card, CardContent } from '@/components/ui/card';
+import { 
+  Users, 
+  Phone, 
+  FileText, 
+  BarChart3, 
+  Shield,
+  TrendingUp,
+  TrendingDown,
+  ArrowUpRight,
+  ArrowDownRight
+} from 'lucide-react';
 
 export default function DashboardPage() {
-  const router = useRouter()
-  const { user, isAuthenticated } = useAuthStore()
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login')
-    }
-  }, [isAuthenticated, router])
-
-  if (!isAuthenticated || !user) {
-    return null
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Brain className="h-8 w-8 text-blue-600" />
-            <span className="text-xl font-bold">房探AI</span>
-          </div>
-          <div className="flex items-center space-x-4">
-            <span className="text-gray-600">{user.name}</span>
-            <Button variant="outline" size="sm">退出</Button>
-          </div>
+    <div className="space-y-6">
+      {/* 欢迎区域 */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800">欢迎回来，管理员</h1>
+          <p className="text-gray-500 mt-1">今天是2026年2月18日，星期二</p>
         </div>
-      </header>
+        <div className="flex gap-3">
+          <button className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-medium hover:shadow-lg hover:shadow-blue-500/25 transition">
+            + 新建任务
+          </button>
+        </div>
+      </div>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">
-            欢迎回来，{user.name}!
-          </h1>
-          <p className="text-gray-600">
-            开始使用AI Agent提升你的房产营销效率
-          </p>
-        </div>
+      {/* 统计卡片 */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <StatCard 
+          title="今日新增客户"
+          value="1,256"
+          trend="+23%"
+          trendUp={true}
+          icon={<Users className="h-5 w-5 text-blue-600" />}
+          color="blue"
+        />
+        <StatCard 
+          title="今日外呼"
+          value="356"
+          trend="+15%"
+          trendUp={true}
+          icon={<Phone className="h-5 w-5 text-green-600" />}
+          color="green"
+        />
+        <StatCard 
+          title="意向客户"
+          value="42"
+          trend="+8%"
+          trendUp={true}
+          icon={<BarChart3 className="h-5 w-5 text-orange-600" />}
+          color="orange"
+        />
+        <StatCard 
+          title="转化率"
+          value="12.5%"
+          trend="+2.3%"
+          trendUp={true}
+          icon={<TrendingUp className="h-5 w-5 text-purple-600" />}
+          color="purple"
+        />
+      </div>
 
-        {/* Quick Stats */}
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
-          <StatCard 
-            icon={<Users className="h-8 w-8 text-blue-600" />}
-            title="今日新增客户"
-            value="128"
-            trend="+23%"
-            trendUp={true}
+      {/* 快捷操作 */}
+      <div>
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">快捷操作</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <QuickActionButton 
+            icon={<Phone className="h-6 w-6" />}
+            label="新建外呼"
+            color="from-blue-500 to-blue-600"
           />
-          <StatCard 
-            icon={<Phone className="h-8 w-8 text-green-600" />}
-            title="今日外呼"
-            value="356"
-            trend="+15%"
-            trendUp={true}
+          <QuickActionButton 
+            icon={<Users className="h-6 w-6" />}
+            label="采集数据"
+            color="from-green-500 to-green-600"
           />
-          <StatCard 
-            icon={<Target className="h-8 w-8 text-purple-600" />}
-            title="意向客户"
-            value="42"
-            trend="+8%"
-            trendUp={true}
+          <QuickActionButton 
+            icon={<FileText className="h-6 w-6" />}
+            label="生成文案"
+            color="from-purple-500 to-purple-600"
           />
-          <StatCard 
-            icon={<TrendingUp className="h-8 w-8 text-orange-600" />}
-            title="转化率"
-            value="12.5%"
-            trend="+2.3%"
-            trendUp={true}
+          <QuickActionButton 
+            icon={<BarChart3 className="h-6 w-6" />}
+            label="数据报表"
+            color="from-orange-500 to-orange-600"
           />
         </div>
+      </div>
 
-        {/* Agent Cards */}
-        <h2 className="text-2xl font-bold mb-4">AI Agent 能力中心</h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          <AgentCard 
-            icon={<Users className="h-10 w-10 text-blue-600" />}
-            title="数据采集 Agent"
-            description="多源数据采集、交叉核验，联系方式有效率≥95%"
-            features={['POI数据', '平台数据', '行为数据', '交叉核验']}
-            link="/dashboard/data-collection"
+      {/* AI Agent 状态 */}
+      <div>
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">AI Agent 状态</h2>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+          <AgentStatusCard 
+            name="数据采集 Agent"
+            status="运行中"
+            tasks="1,234"
+            successRate="98.5%"
+            color="blue"
           />
-          <AgentCard 
-            icon={<Phone className="h-10 w-10 text-green-600" />}
-            title="智能触达 Agent"
-            description="AI外呼支持10+轮对话，实时意向评分，智能转人工"
-            features={['AI外呼', '企微触达', '短信群发', '意向评分']}
-            link="/dashboard/reach"
+          <AgentStatusCard 
+            name="智能触达 Agent"
+            status="运行中"
+            tasks="856"
+            successRate="95.2%"
+            color="green"
           />
-          <AgentCard 
-            icon={<FileText className="h-10 w-10 text-purple-600" />}
-            title="内容生成 Agent"
-            description="智能文案生成、虚拟软装效果图、多平台一键分发"
-            features={['文案生成', '图片生成', '视频脚本', '多平台分发']}
-            link="/dashboard/content"
+          <AgentStatusCard 
+            name="内容生成 Agent"
+            status="运行中"
+            tasks="423"
+            successRate="97.8%"
+            color="purple"
           />
-          <AgentCard 
-            icon={<BarChart3 className="h-10 w-10 text-orange-600" />}
-            title="CRM协同 Agent"
-            description="智能标签体系、客户生命周期管理、动态激活提醒"
-            features={['客户标签', '生命周期', '跟进提醒', '数据分析']}
-            link="/dashboard/crm"
+          <AgentStatusCard 
+            name="CRM协同 Agent"
+            status="运行中"
+            tasks="2,156"
+            successRate="99.1%"
+            color="orange"
           />
-          <AgentCard 
-            icon={<Shield className="h-10 w-10 text-red-600" />}
-            title="合规管理 Agent"
-            description="AI内容标识、敏感词过滤、话术审核、区块链存证"
-            features={['内容标识', '敏感词过滤', '话术审核', '存证追溯']}
-            link="/dashboard/compliance"
+          <AgentStatusCard 
+            name="合规管理 Agent"
+            status="运行中"
+            tasks="1,789"
+            successRate="100%"
+            color="red"
           />
-          <QuickActionCard />
         </div>
-      </main>
+      </div>
+
+      {/* 最近活动 */}
+      <div>
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">最近活动</h2>
+        <Card>
+          <CardContent className="p-0">
+            <div className="divide-y divide-gray-100">
+              {recentActivities.map((activity, index) => (
+                <div key={index} className="flex items-center justify-between p-4 hover:bg-gray-50 transition">
+                  <div className="flex items-center space-x-4">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                      activity.color === 'blue' ? 'bg-blue-100 text-blue-600' :
+                      activity.color === 'green' ? 'bg-green-100 text-green-600' :
+                      activity.color === 'purple' ? 'bg-purple-100 text-purple-600' :
+                      'bg-orange-100 text-orange-600'
+                    }`}>
+                      {activity.icon}
+                    </div>
+                    <div>
+                      <div className="font-medium text-gray-800">{activity.title}</div>
+                      <div className="text-sm text-gray-500">{activity.time}</div>
+                    </div>
+                  </div>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    activity.status === '成功' ? 'bg-green-100 text-green-700' :
+                    activity.status === '进行中' ? 'bg-blue-100 text-blue-700' :
+                    'bg-gray-100 text-gray-700'
+                  }`}>
+                    {activity.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
-  )
+  );
 }
 
-function StatCard({ icon, title, value, trend, trendUp }: { icon: React.ReactNode; title: string; value: string; trend: string; trendUp: boolean }) {
+function StatCard({ 
+  title, 
+  value, 
+  trend, 
+  trendUp, 
+  icon, 
+  color 
+}: { 
+  title: string; 
+  value: string; 
+  trend: string; 
+  trendUp: boolean; 
+  icon: React.ReactNode; 
+  color: string;
+}) {
+  const colorClasses = {
+    blue: 'bg-blue-50',
+    green: 'bg-green-50',
+    orange: 'bg-orange-50',
+    purple: 'bg-purple-50',
+  };
+
   return (
-    <Card>
-      <CardContent className="pt-6">
+    <Card className="hover:shadow-md transition-shadow">
+      <CardContent className="p-4 md:p-6">
         <div className="flex items-center justify-between mb-4">
-          {icon}
-          <span className={`text-sm font-medium ${trendUp ? 'text-green-600' : 'text-red-600'}`}>
+          <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl ${colorClasses[color as keyof typeof colorClasses]} flex items-center justify-center`}>
+            {icon}
+          </div>
+          <span className={`flex items-center text-xs md:text-sm font-medium ${
+            trendUp ? 'text-green-600' : 'text-red-600'
+          }`}>
+            {trendUp ? <ArrowUpRight className="w-3 h-3 md:w-4 md:h-4 mr-1" /> : <ArrowDownRight className="w-3 h-3 md:w-4 md:h-4 mr-1" />}
             {trend}
           </span>
         </div>
-        <div className="text-2xl font-bold">{value}</div>
-        <div className="text-sm text-gray-500">{title}</div>
+        <div className="text-2xl md:text-3xl font-bold text-gray-800">{value}</div>
+        <div className="text-sm text-gray-500 mt-1">{title}</div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
-function AgentCard({ icon, title, description, features, link }: { icon: React.ReactNode; title: string; description: string; features: string[]; link: string }) {
+function QuickActionButton({ icon, label, color }: { icon: React.ReactNode; label: string; color: string }) {
   return (
-    <Card className="hover:shadow-lg transition-shadow">
-      <CardHeader>
-        <div className="mb-4">{icon}</div>
-        <CardTitle className="text-xl">{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ul className="space-y-2 mb-4">
-          {features.map((feature, index) => (
-            <li key={index} className="flex items-center text-sm text-gray-600">
-              <div className="w-2 h-2 bg-blue-600 rounded-full mr-2" />
-              {feature}
-            </li>
-          ))}
-        </ul>
-        <Link href={link}>
-          <Button className="w-full">
-            立即使用
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-        </Link>
-      </CardContent>
-    </Card>
-  )
+    <button className={`p-4 md:p-6 rounded-2xl bg-gradient-to-r ${color} text-white text-center hover:shadow-lg transition-all hover:-translate-y-1`}>
+      <div className="flex justify-center mb-2">{icon}</div>
+      <div className="font-medium">{label}</div>
+    </button>
+  );
 }
 
-function QuickActionCard() {
+function AgentStatusCard({ 
+  name, 
+  status, 
+  tasks, 
+  successRate, 
+  color 
+}: { 
+  name: string; 
+  status: string; 
+  tasks: string; 
+  successRate: string; 
+  color: string;
+}) {
+  const colorClasses = {
+    blue: 'border-l-blue-500',
+    green: 'border-l-green-500',
+    orange: 'border-l-orange-500',
+    purple: 'border-l-purple-500',
+    red: 'border-l-red-500',
+  };
+
   return (
-    <Card className="border-dashed border-2 bg-gray-50">
-      <CardHeader>
-        <Zap className="h-10 w-10 text-yellow-600 mb-4" />
-        <CardTitle className="text-xl">快速开始</CardTitle>
-        <CardDescription>
-          选择一个任务快速开始，或查看最近操作
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-2">
-        <Button variant="outline" className="w-full justify-start">
-          📞 新建外呼任务
-        </Button>
-        <Button variant="outline" className="w-full justify-start">
-          📊 采集客户数据
-        </Button>
-        <Button variant="outline" className="w-full justify-start">
-          ✍️ 生成营销文案
-        </Button>
-        <Button variant="outline" className="w-full justify-start">
-          📈 查看数据报表
-        </Button>
+    <Card className={`border-l-4 ${colorClasses[color as keyof typeof colorClasses]}`}>
+      <CardContent className="p-4 md:p-6">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-semibold text-gray-800">{name}</h3>
+          <span className="flex items-center w-2 h-2 rounded-full bg-green-500">
+            <span className="absolute inline-flex h-2 w-2 rounded-full bg-green-400 opacity-75 animate-ping"></span>
+          </span>
+        </div>
+        <div className="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <div className="text-gray-500">完成任务</div>
+            <div className="font-semibold text-gray-800">{tasks}</div>
+          </div>
+          <div>
+            <div className="text-gray-500">成功率</div>
+            <div className="font-semibold text-green-600">{successRate}</div>
+          </div>
+        </div>
       </CardContent>
     </Card>
-  )
+  );
 }
+
+const recentActivities = [
+  { 
+    icon: <Users className="h-5 w-5" />, 
+    title: '采集客户数据 1,256 条', 
+    time: '2分钟前', 
+    status: '成功',
+    color: 'blue'
+  },
+  { 
+    icon: <Phone className="h-5 w-5" />, 
+    title: 'AI外呼完成 356 通', 
+    time: '5分钟前', 
+    status: '成功',
+    color: 'green'
+  },
+  { 
+    icon: <FileText className="h-5 w-5" />, 
+    title: '生成文案 42 篇', 
+    time: '10分钟前', 
+    status: '成功',
+    color: 'purple'
+  },
+  { 
+    icon: <Shield className="h-5 w-5" />, 
+    title: '合规审核通过', 
+    time: '15分钟前', 
+    status: '成功',
+    color: 'orange'
+  },
+  { 
+    icon: <BarChart3 className="h-5 w-5" />, 
+    title: '数据报表生成中', 
+    time: '20分钟前', 
+    status: '进行中',
+    color: 'blue'
+  },
+];

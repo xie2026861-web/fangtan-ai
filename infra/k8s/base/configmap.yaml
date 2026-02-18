@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fangtan-config
+  namespace: fangtan-ai
+data:
+  # 应用配置
+  NODE_ENV: "production"
+  LOG_LEVEL: "info"
+  
+  # API配置
+  API_PORT: "3001"
+  API_PREFIX: "/api/v1"
+  
+  # 数据库配置
+  DATABASE_URL: "postgresql://fangtan:fangtan@postgres:5432/fangtan"
+  REDIS_URL: "redis://:fangtan@redis:6379"
+  MONGODB_URL: "mongodb://fangtan:fangtan@mongo:27017/fangtan"
+  
+  # Elasticsearch配置
+  ELASTICSEARCH_URL: "http://elasticsearch:9200"
+  
+  # ClickHouse配置
+  CLICKHOUSE_URL: "http://clickhouse:8123"
+  
+  # Kafka配置
+  KAFKA_BROKERS: "kafka:9092"
+  
+  # JWT配置
+  JWT_SECRET: "your-production-jwt-secret-at-least-32-characters"
+  JWT_EXPIRES_IN: "7d"
+  
+  # CORS配置
+  CORS_ORIGIN: "https://fangtan.ai,https://www.fangtan.ai"
+  
+  # 功能开关
+  ENABLE_MOCK_DATA: "false"

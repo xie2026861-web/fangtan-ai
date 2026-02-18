@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: fangtan-elasticsearch
+  namespace: fangtan-ai
+  labels:
+    app: fangtan-elasticsearch
+    version: v1
+spec:
+  serviceName: fangtan-elasticsearch
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fangtan-elasticsearch
+  template:
+    metadata:
+      labels:
+        app: fangtan-elasticsearch
+        version: v1
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9200"
+    spec:
+      containers:
+        - name: elasticsearch
+          image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+          ports:
+            - containerPort: 9200
+              name: http-es
+            - containerPort: 9300
+              name: tcp-transport
+          env:
+            - name: discovery.type
+              value: "single-node"
+            - name: ES_JAVA_OPTS
+              value: "-Xms1g -Xmx2g"
+            - name: xpack.security.enabled
+              value: "true"
+            - name: ELASTIC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: fangtan-secrets
+                  key: ELASTICSEARCH_PASSWORD
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "2Gi"
+            limits:
+              cpu: "4000m"
+              memory: "8Gi"
+          volumeMounts:
+            - name: es-data
+              mountPath: /usr/share/elasticsearch/data
+          livenessProbe:
+            httpGet:
+              path: /_cluster/health
+              port: 9200
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /_cluster/health
+              port: 9200
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+      volumes:
+        - name: es-data
+          persistentVolumeClaim:
+            claimName: fangtan-elasticsearch-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fangtan-elasticsearch-pvc
+  namespace: fangtan-ai
+  labels:
+    app: fangtan-elasticsearch
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: cloud-ssd
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fangtan-elasticsearch
+  namespace: fangtan-ai
+  labels:
+    app: fangtan-elasticsearch
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9200
+      targetPort: 9200
+      protocol: TCP
+      name: http-es
+    - port: 9300
+      targetPort: 9300
+      protocol: TCP
+      name: tcp-transport
+  selector:
+    app: fangtan-elasticsearch

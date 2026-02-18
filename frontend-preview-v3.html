@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>房探AI - 让房产营销更智能</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+        @keyframes fade-in-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* 背景渐变 - 深藏蓝到深紫 */
+        .hero-bg { 
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3c 50%, #141b3a 100%);
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #0066ff 0%, #7c3aed 50%, #0ea5e9 100%);
+        }
+        
+        /* 网格背景 */
+        .grid-bg {
+            background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+        
+        /* 卡片 */
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        /* 按钮 */
+        .btn-primary {
+            background: linear-gradient(135deg, #0066ff 0%, #7c3aed 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 102, 255, 0.3);
+        }
+        
+        /* 统计数字 */
+        .stat-num {
+            background: linear-gradient(135deg, #0066ff 0%, #7c3aed 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* 底部渐变条 */
+        .gradient-line {
+            height: 3px;
+            background: linear-gradient(90deg, #0066ff, #7c3aed, #0ea5e9);
+        }
+        
+        /* 图标样式 */
+        .icon-wrap {
+            background: linear-gradient(135deg, rgba(0,102,255,0.1) 0%, rgba(124,58,237,0.1) 100%);
+        }
+        
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        .animate-pulse { animation: pulse 2s ease-in-out infinite; }
+        .animate-fade-in { animation: fade-in-up 0.6s ease-out forwards; }
+    </style>
+</head>
+<body>
+    <!-- Hero Section - 深色背景 -->
+    <section class="hero-bg relative min-h-screen overflow-hidden">
+        <div class="absolute inset-0 grid-bg"></div>
+        
+        <!-- 装饰圆 -->
+        <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-blue-600/20 to-purple-600/20 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-cyan-500/10 to-blue-600/10 rounded-full blur-3xl"></div>
+        
+        <!-- 导航 -->
+        <nav class="relative z-10 container mx-auto px-6 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center hero-gradient">
+                        <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18"/></svg>
+                    </div>
+                    <span class="text-white text-xl font-bold">房探AI</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#" class="text-white/70 hover:text-white transition">功能</a>
+                    <a href="#" class="text-white/70 hover:text-white transition">方案</a>
+                    <a href="#" class="text-white/70 hover:text-white transition">案例</a>
+                    <a href="#" class="text-white/70 hover:text-white transition">定价</a>
+                </div>
+                <button class="text-white/70 hover:text-white transition">登录</button>
+            </div>
+        </nav>
+        
+        <!-- Hero内容 -->
+        <div class="relative z-10 container mx-auto px-6 py-12 md:py-20">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <!-- 左侧文字 -->
+                <div class="animate-fade-in">
+                    <h1 class="text-4xl md:text-6xl font-bold text-white leading-tight mb-6">
+                        让房产营销<br/>
+                        <span class="hero-gradient bg-clip-text text-transparent">更智能</span>
+                    </h1>
+                    <p class="text-lg text-white/60 mb-8 max-w-lg">
+                        5大AI Agent协同作战，为房产经纪人提供智能获客、精准触达、内容生成等一站式解决方案
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button class="btn-primary text-white px-8 py-4 rounded-xl font-semibold">
+                            免费试用
+                        </button>
+                        <button class="border border-white/30 text-white px-8 py-4 rounded-xl font-semibold hover:bg-white/10 transition">
+                            了解更多
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 右侧图形 -->
+                <div class="relative animate-float hidden md:block">
+                    <div class="relative w-full aspect-square max-w-lg mx-auto">
+                        <!-- 主体 -->
+                        <div class="absolute inset-0 bg-gradient-to-br from-blue-500/30 to-purple-500/30 rounded-3xl backdrop-blur-xl border border-white/10"></div>
+                        <!-- 内嵌卡片 -->
+                        <div class="absolute top-8 left-8 right-8 bottom-8 bg-white/5 rounded-2xl border border-white/10 p-6">
+                            <div class="grid grid-cols-3 gap-4 h-full">
+                                <div class="bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl"></div>
+                                <div class="bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-xl"></div>
+                                <div class="bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl"></div>
+                                <div class="col-span-2 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl"></div>
+                                <div class="bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-xl"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部渐变条 -->
+        <div class="absolute bottom-0 left-0 right-0 gradient-line"></div>
+    </section>
+    
+    <!-- Stats Section - 白色背景 -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="text-4xl font-bold stat-num mb-2">1,256</div>
+                    <div class="text-gray-500">今日新增客户</div>
+                    <span class="inline-block mt-2 px-3 py-1 bg-green-100 text-green-600 rounded-full text-sm">+23%</span>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold stat-num mb-2">356</div>
+                    <div class="text-gray-500">今日外呼</div>
+                    <span class="inline-block mt-2 px-3 py-1 bg-green-100 text-green-600 rounded-full text-sm">+15%</span>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold stat-num mb-2">42</div>
+                    <div class="text-gray-500">意向客户</div>
+                    <span class="inline-block mt-2 px-3 py-1 bg-green-100 text-green-600 rounded-full text-sm">+8%</span>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold stat-num mb-2">12.5%</div>
+                    <div class="text-gray-500">转化率</div>
+                    <span class="inline-block mt-2 px-3 py-1 bg-green-100 text-green-600 rounded-full text-sm">+2.3%</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features Section - 白色背景 -->
+    <section class="py-20 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+                    AI Agent 能力中心
+                </h2>
+                <p class="text-gray-500">5大AI Agent协同工作，覆盖房产营销全流程</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="bg-white rounded-2xl p-8 feature-card">
+                    <div class="w-14 h-14 rounded-xl icon-wrap flex items-center justify-center mb-6">
+                        <svg class="w-7 h-7 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">数据采集 Agent</h3>
+                    <p class="text-gray-500 text-sm mb-6">多源数据采集、交叉核验，联系方式有效率≥95%</p>
+                    <ul class="space-y-2">
+                        <li class="flex items-center text-gray-600 text-sm"><span class="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center mr-2 text-blue-600 text-xs">✓</span>POI数据采集</li>
+                        <li class="flex items-center text-gray-600 text-sm"><span class="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center mr-2 text-blue-600 text-xs">✓</span>平台数据整合</li>
+                        <li class="flex items-center text-gray-600 text-sm"><span class="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center mr-2 text-blue-600 text-xs">✓</span>智能交叉核验</li>
+                    </ul>
+                </div>
+                
+                <!-- Card 2 -->
+                <div class="bg-white rounded-2xl p-8 feature-card">
+                    <div class="w-14 h-14 rounded-xl flex items-center justify-center mb-6" style="background:linear-gradient(135deg,rgba(16,185,129,0.1),rgba(59,130,246,0.1))">
+                        <svg class="w-7 h-7 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">智能触达 Agent</h3>
+                    <p class="text-gray-500 text-sm mb-6">AI外呼支持10+轮对话，实时意向评分</p>
+                    <ul class="space-y-2">
+                        <li class="flex items-center text-gray-600 text-sm"><span class="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center mr-2 text-green-600 text-xs">✓</span>AI智能外呼</li>
+                        <li class="flex items-center text-gray-600 text-sm"><span class="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center mr-2 text-green-600 text-xs">✓</span>企业微信触达</li>
+                        <li class="flex items-center text-gray-600 text-sm"><span class="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center mr-2 text-green-600 text-xs">✓</span>短信群发</li>
+                    </ul>
+                </div>
+                
+                <!-- Card 3 -->
+                <div class="bg-white rounded-2xl p-8 feature-card">
+                    <div class="w-14 h-14 rounded-xl flex items-center justify-center mb-6" style="background:linear-gradient(135deg,rgba(139,92,246,0.1),rgba(236,72,153,0.1))">
+                        <svg class="w-7 h-7 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">内容生成 Agent</h3>
+                    <p class="text-gray-500 text-sm mb-6">智能文案生成、虚拟软装效果图</p>
+                    <ul class="space-y-2">
+                        <li class="flex items-center text-gray-600 text-sm"><span class="w-5 h-5 rounded-full bg-purple-100 flex items-center justify-center mr-2 text-purple-600 text-xs">✓</span>智能文案</li>
+                        <li class="flex items-center text-gray-600 text-sm"><span class="w-5 h-5 rounded-full bg-purple-100 flex items-center justify-center mr-2 text-purple-600 text-xs">✓</span>图片生成</li>
+                        <li class="flex items-center text-gray-600 text-sm"><span class="w-5 h-5 rounded-full bg-purple-100 flex items-center justify-center mr-2 text-purple-600 text-xs">✓</span>多平台分发</li>
+                    </ul>
+                </div>
+                
+                <!-- Card 4 -->
+                <div class="bg-white rounded-2xl p-8 feature-card">
+                    <div class="w-14 h-14 rounded-xl flex items-center justify-center mb-6" style="background:linear-gradient(135deg,rgba(245,158,11,0.1),rgba(239,68,68,0.1))">
+                        <svg class="w-7 h-7 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">CRM协同 Agent</h3>
+                    <p class="text-gray-500 text-sm mb-6">智能标签体系、客户生命周期追踪</p>
+                    <ul class="space-y-2">
+                        <li class="flex items-center text-gray-600 text-sm"><span class="w-5 h-5 rounded-full bg-orange-100 flex items-center justify-center mr-2 text-orange-600 text-xs">✓</span>智能标签</li>
+                        <li class="flex items-center text-gray-600 text-sm"><span class="w-5 h-5 rounded-full bg-orange-100 flex items-center justify-center mr-2 text-orange-600 text-xs">✓</span>生命周期</li>
+                        <li class="flex items-center text-gray-600 text-sm"><span class="w-5 h-5 rounded-full bg-orange-100 flex items-center justify-center mr-2 text-orange-600 text-xs">✓</span>数据分析</li>
+                    </ul>
+                </div>
+                
+                <!-- Card 5 -->
+                <div class="bg-white rounded-2xl p-8 feature-card">
+                    <div class="w-14 h-14 rounded-xl flex items-center justify-center mb-6" style="background:linear-gradient(135deg,rgba(239,68,68,0.1),rgba(139,92,246,0.1))">
+                        <svg class="w-7 h-7 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">合规管理 Agent</h3>
+                    <p class="text-gray-500 text-sm mb-6">AI内容标识、敏感词过滤、话术审核</p>
+                    <ul class="space-y-2">
+                        <li class="flex items-center text-gray-600 text-sm"><span class="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center mr-2 text-red-600 text-xs">✓</span>内容标识</li>
+                        <li class="flex items-center text-gray-600 text-sm"><span class="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center mr-2 text-red-600 text-xs">✓</span>敏感词过滤</li>
+                        <li class="flex items-center text-gray-600 text-sm"><span class="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center mr-2 text-red-600 text-xs">✓</span>话术审核</li>
+                    </ul>
+                </div>
+                
+                <!-- Quick Start -->
+                <div class="bg-white rounded-2xl p-8 feature-card border-2 border-dashed border-gray-200">
+                    <div class="w-14 h-14 rounded-xl flex items-center justify-center mb-6" style="background:linear-gradient(135deg,rgba(0,102,255,0.1),rgba(124,58,237,0.1))">
+                        <svg class="w-7 h-7 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">快速开始</h3>
+                    <p class="text-gray-500 text-sm mb-6">选择一个任务快速开始</p>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button class="py-2 px-3 rounded-lg bg-gray-50 text-gray-600 text-sm hover:bg-blue-50 hover:text-blue-600 transition">📞 新建外呼</button>
+                        <button class="py-2 px-3 rounded-lg bg-gray-50 text-gray-600 text-sm hover:bg-blue-50 hover:text-blue-600 transition">📊 采集数据</button>
+                        <button class="py-2 px-3 rounded-lg bg-gray-50 text-gray-600 text-sm hover:bg-blue-50 hover:text-blue-600 transition">✍️ 生成文案</button>
+                        <button class="py-2 px-3 rounded-lg bg-gray-50 text-gray-600 text-sm hover:bg-blue-50 hover:text-blue-600 transition">📈 数据报表</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="py-10 bg-gray-900">
+        <div class="container mx-auto px-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center hero-gradient">
+                        <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18"/></svg>
+                    </div>
+                    <span class="text-white font-bold">房探AI</span>
+                </div>
+                <p class="text-gray-400 text-sm">© 2026 房探AI. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

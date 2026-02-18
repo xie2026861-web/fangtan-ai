@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: fangtan-postgres
+  namespace: fangtan-ai
+  labels:
+    app: fangtan-postgres
+    version: v1
+spec:
+  serviceName: fangtan-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fangtan-postgres
+  template:
+    metadata:
+      labels:
+        app: fangtan-postgres
+        version: v1
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+              name: tcp-postgres
+          env:
+            - name: POSTGRES_USER
+              value: "fangtan"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: fangtan-secrets
+                  key: DATABASE_PASSWORD
+            - name: POSTGRES_DB
+              value: "fangtan_prod"
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "4000m"
+              memory: "8Gi"
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - fangtan
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - fangtan
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: fangtan-postgres-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fangtan-postgres-pvc
+  namespace: fangtan-ai
+  labels:
+    app: fangtan-postgres
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: cloud-ssd
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fangtan-postgres
+  namespace: fangtan-ai
+  labels:
+    app: fangtan-postgres
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5432
+      targetPort: 5432
+      protocol: TCP
+      name: tcp-postgres
+  selector:
+    app: fangtan-postgres

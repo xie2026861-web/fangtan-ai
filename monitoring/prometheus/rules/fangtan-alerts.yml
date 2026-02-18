@@ -1,0 +1,218 @@
+# 房探AI Prometheus告警规则
+groups:
+  # 应用服务告警
+  - name: fangtan-application-alerts
+    rules:
+      # API Gateway不可用
+      - alert: APIGatewayDown
+        expr: up{job="fangtan-api-gateway"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          team: backend
+        annotations:
+          summary: "API Gateway服务不可用"
+          description: "API Gateway已经宕机超过2分钟"
+
+      # API Gateway响应延迟高
+      - alert: APIGatewayHighLatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="fangtan-api-gateway"}[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: "API Gateway响应延迟过高"
+          description: "95%分位响应时间超过2秒"
+
+      # API Gateway错误率过高
+      - alert: APIGatewayHighErrorRate
+        expr: rate(http_requests_total{status=~"5..",job="fangtan-api-gateway"}[5m]) / rate(http_requests_total{job="fangtan-api-gateway"}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          team: backend
+        annotations:
+          summary: "API Gateway错误率过高"
+          description: "5xx错误率超过5%"
+
+      # Web服务不可用
+      - alert: WebDown
+        expr: up{job="fangtan-web"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          team: frontend
+        annotations:
+          summary: "Web服务不可用"
+
+  # 数据库告警
+  - name: fangtan-database-alerts
+    rules:
+      # PostgreSQL不可用
+      - alert: PostgreSQLDown
+        expr: up{job="postgres"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          team: infrastructure
+        annotations:
+          summary: "PostgreSQL数据库不可用"
+
+      # PostgreSQL连接数过高
+      - alert: PostgreSQLConnectionsHigh
+        expr: pg_stat_activity_count / pg_settings_max_connections > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "PostgreSQL连接数过高"
+
+      # Redis不可用
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          team: infrastructure
+        annotations:
+          summary: "Redis缓存不可用"
+
+      # Redis内存使用率高
+      - alert: RedisMemoryHigh
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "Redis内存使用率过高"
+
+      # MongoDB不可用
+      - alert: MongoDBDown
+        expr: up{job="mongodb"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          team: infrastructure
+        annotations:
+          summary: "MongoDB数据库不可用"
+
+      # Elasticsearch不可用
+      - alert: ElasticsearchDown
+        expr: up{job="elasticsearch"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          team: infrastructure
+        annotations:
+          summary: "Elasticsearch搜索服务不可用"
+
+  # 基础设施告警
+  - name: fangtan-infrastructure-alerts
+    rules:
+      # 节点CPU使用率高
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 10m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "节点CPU使用率过高"
+          description: "CPU使用率超过80%持续10分钟"
+
+      # 节点内存使用率高
+      - alert: HighMemoryUsage
+        expr: (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100 > 85
+        for: 10m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "节点内存使用率过高"
+          description: "内存使用率超过85%持续10分钟"
+
+      # 节点磁盘空间不足
+      - alert: LowDiskSpace
+        expr: (1 - node_filesystem_avail_bytes / node_filesystem_size_bytes) * 100 > 85
+        for: 10m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "节点磁盘空间不足"
+
+      # Pod重启频繁
+      - alert: PodFrequentRestart
+        expr: increase(kube_pod_container_status_restarts_total[1h]) > 5
+        for: 5m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "Pod频繁重启"
+
+      # Pod内存使用率高
+      - alert: PodMemoryHigh
+        expr: (sum by(pod) (container_memory_working_set_bytes) / sum by(pod) (container_spec_memory_limit_bytes)) > 0.9
+        for: 10m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "Pod内存使用率过高"
+
+      # Pod CPU使用率高
+      - alert: PodCPUHigh
+        expr: sum by(pod) (rate(container_cpu_usage_seconds_total[5m])) / sum by(pod) (container_spec_cpu_quota / container_spec_cpu_period) > 0.9
+        for: 10m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "Pod CPU使用率过高"
+
+  # 业务告警
+  - name: fangtan-business-alerts
+    rules:
+      # 用户注册失败率
+      - alert: UserRegistrationFailed
+        expr: rate(api_requests_total{endpoint="/api/v1/auth/register",status="5.."}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: "用户注册失败率过高"
+
+      # 房源搜索失败
+      - alert: PropertySearchFailed
+        expr: rate(api_requests_total{endpoint="/api/v1/properties",status="5.."}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: "房源搜索失败率过高"
+
+      # AI分析失败
+      - alert: AIAnalysisFailed
+        expr: rate(api_requests_total{endpoint=~"/api/v1/ai/.*",status="5.."}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: "AI分析请求失败率过高"
+
+      # 支付失败
+      - alert: PaymentFailed
+        expr: rate(api_requests_total{endpoint="/api/v1/payments.*",status="5.."}[5m]) > 0.02
+        for: 5m
+        labels:
+          severity: critical
+          team: backend
+        annotations:
+          summary: "支付请求失败率过高"

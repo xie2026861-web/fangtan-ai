@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>房探AI - 让房产营销更智能</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+        }
+        
+        /* 动画 */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 30px -10px rgba(102, 126, 234, 0.4); }
+            50% { box-shadow: 0px -10px rgba(102 0 50, 126, 234, 0.6); }
+        }
+        
+        @keyframes fade-in-up {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        @keyframes breathe {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+        
+        /* 背景渐变 */
+        .hero-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #6B8DD6 100%);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .stat-card {
+            background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(248,250,252,1) 100%);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.15);
+        }
+        
+        .feature-card {
+            background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(248,250,252,1) 100%);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 10px 30px -10px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px -10px rgba(102, 126, 234, 0.5);
+        }
+        
+        .icon-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+        .animate-fade-in-up { animation: fade-in-up 0.8s ease-out forwards; }
+        
+        .grid-bg {
+            background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-8px);
+        }
+        
+        .card-glow {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card-glow::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .card-glow:hover::before {
+            opacity: 1;
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.5);
+        }
+        
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body class="bg-slate-50">
+    <!-- Hero Section -->
+    <section class="hero-bg relative min-h-screen flex items-center justify-center overflow-hidden">
+        <!-- 背景动画 -->
+        <div class="absolute inset-0 grid-bg"></div>
+        
+        <!-- 装饰圆 -->
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-float"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-float" style="animation-delay: 2s;"></div>
+        
+        <!-- 内容 -->
+        <div class="relative z-10 container mx-auto px-4 text-center py-20">
+            <!-- Logo -->
+            <div class="flex items-center justify-center mb-12 animate-fade-in-up" style="animation-delay: 0s;">
+                <div class="w-24 h-24 rounded-2xl flex items-center justify-center shadow-2xl animate-pulse-glow" 
+                     style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <span class="text-5xl">🧠</span>
+                </div>
+            </div>
+            
+            <!-- 标题 -->
+            <h1 class="text-6xl md:text-8xl font-bold mb-8 animate-fade-in-up text-white" style="animation-delay: 0.2s;">
+                让房产营销
+                <br />
+                <span class="text-gradient">更智能</span>
+            </h1>
+            
+            <!-- 副标题 -->
+            <p class="text-xl md:text-2xl text-slate-200 mb-12 max-w-3xl mx-auto animate-fade-in-up" style="animation-delay: 0.4s;">
+                5大AI Agent协同作战，为房产经纪人提供智能获客、精准触达、内容生成等一站式解决方案
+            </p>
+            
+            <!-- 按钮 -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up" style="animation-delay: 0.6s;">
+                <button class="btn-primary text-white text-lg px-10 py-4 rounded-xl font-semibold">
+                    🚀 免费开始使用
+                </button>
+                <button class="btn-secondary text-white text-lg px-10 py-4 rounded-xl font-semibold">
+                    了解更多
+                </button>
+            </div>
+        </div>
+        
+        <!-- 滚动提示 -->
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <div class="w-8 h-12 border-2 border-white/30 rounded-full flex justify-center pt-2">
+                <div class="w-1.5 h-4 bg-white/50 rounded-full"></div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Stats Section -->
+    <section class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="stat-card rounded-2xl p-8 text-center">
+                    <div class="flex items-center justify-center mb-4">
+                        <div class="w-16 h-16 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <span class="text-3xl">👥</span>
+                        </div>
+                    </div>
+                    <div class="text-4xl font-bold text-slate-800 mb-2">1,256</div>
+                    <div class="text-slate-500 mb-3">今日新增客户</div>
+                    <span class="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">+23%</span>
+                </div>
+                
+                <div class="stat-card rounded-2xl p-8 text-center">
+                    <div class="flex items-center justify-center mb-4">
+                        <div class="w-16 h-16 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #06b6d4 0%, #7c3aed 100%);">
+                            <span class="text-3xl">📞</span>
+                        </div>
+                    </div>
+                    <div class="text-4xl font-bold text-slate-800 mb-2">356</div>
+                    <div class="text-slate-500 mb-3">今日外呼</div>
+                    <span class="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">+15%</span>
+                </div>
+                
+                <div class="stat-card rounded-2xl p-8 text-center">
+                    <div class="flex items-center justify-center mb-4">
+                        <div class="w-16 h-16 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);">
+                            <span class="text-3xl">🎯</span>
+                        </div>
+                    </div>
+                    <div class="text-4xl font-bold text-slate-800 mb-2">42</div>
+                    <div class="text-slate-500 mb-3">意向客户</div>
+                    <span class="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">+8%</span>
+                </div>
+                
+                <div class="stat-card rounded-2xl p-8 text-center">
+                    <div class="flex items-center justify-center mb-4">
+                        <div class="w-16 h-16 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);">
+                            <span class="text-3xl">📈</span>
+                        </div>
+                    </div>
+                    <div class="text-4xl font-bold text-slate-800 mb-2">12.5%</div>
+                    <div class="text-slate-500 mb-3">转化率</div>
+                    <span class="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">+2.3%</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section class="py-24" style="background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6">
+                    <span class="text-gradient">AI Agent 能力中心</span>
+                </h2>
+                <p class="text-xl text-slate-600 max-w-2xl mx-auto">
+                    5大AI Agent协同工作，覆盖房产营销全流程
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Card 1: Data Collection -->
+                <div class="feature-card rounded-2xl p-8 card-glow hover-lift cursor-pointer">
+                    <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
+                         style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <span class="text-4xl">📊</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-slate-800 mb-4">数据采集 Agent</h3>
+                    <p class="text-slate-600 mb-6 leading-relaxed">
+                        多源数据采集、交叉核验，联系方式有效率≥95%，精准定位潜在客户
+                    </p>
+                    <ul class="space-y-3">
+                        <li class="flex items-center text-slate-600">
+                            <span class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                <span class="text-green-600 text-sm">✓</span>
+                            </span>
+                            POI数据采集
+                        </li>
+                        <li class="flex items-center text-slate-600">
+                            <span class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                <span class="text-green-600 text-sm">✓</span>
+                            </span>
+                            平台数据整合
+                        </li>
+                        <li class="flex items-center text-slate-600">
+                            <span class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                <span class="text-green-600 text-sm">✓</span>
+                            </span>
+                            智能交叉核验
+                        </li>
+                    </ul>
+                    <button class="w-full mt-6 py-3 rounded-xl font-semibold text-white"
+                            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        立即使用 →
+                    </button>
+                </div>
+                
+                <!-- Card 2: Smart Reach -->
+                <div class="feature-card rounded-2xl p-8 card-glow hover-lift cursor-pointer">
+                    <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
+                         style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);">
+                        <span class="text-4xl">📞</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-slate-800 mb-4">智能触达 Agent</h3>
+                    <p class="text-slate-600 mb-6 leading-relaxed">
+                        AI外呼支持10+轮对话，实时意向评分，智能转人工，提升触达效率5倍
+                    </p>
+                    <ul class="space-y-3">
+                        <li class="flex items-center text-slate-600">
+                            <span class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                <span class="text-green-600 text-sm">✓</span>
+                            </span>
+                            AI智能外呼
+                        </li>
+                        <li class="flex items-center text-slate-600">
+                            <span class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                <span class="text-green-600 text-sm">✓</span>
+                            </span>
+                            企业微信触达
+                        </li>
+                        <li class="flex items-center text-slate-600">
+                            <span class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                <span class="text-green-600 text-sm">✓</span>
+                            </span>
+                            短信群发
+                        </li>
+                    </ul>
+                    <button class="w-full mt-6 py-3 rounded-xl font-semibold text-white"
+                            style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);">
+                        立即使用 →
+                    </button>
+                </div>
+                
+                <!-- Card 3: Content Generation -->
+                <div class="feature-card rounded-2xl p-8 card-glow hover-lift cursor-pointer">
+                    <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
+                         style="background: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%);">
+                        <span class="text-4xl">✍️</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-slate-800 mb-4">内容生成 Agent</h3>
+                    <p class="text-slate-600 mb-6 leading-relaxed">
+                        智能文案生成、虚拟软装效果图、多平台一键分发，让内容创作更高效
+                    </p>
+                    <ul class="space-y-3">
+                        <li class="flex items-center text-slate-600">
+                            <span class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                <span class="text-green-600 text-sm">✓</span>
+                            </span>
+                            智能文案
+                        </li>
+                        <li class="flex items-center text-slate-600">
+                            <span class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                <span class="text-green-600 text-sm">✓</span>
+                            </span>
+                            图片生成
+                        </li>
+                        <li class="flex items-center text-slate-600">
+                            <span class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                <span class="text-green-600 text-sm">✓</span>
+                            </span>
+                            多平台分发
+                        </li>
+                    </ul>
+                    <button class="w-full mt-6 py-3 rounded-xl font-semibold text-white"
+                            style="background: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%);">
+                        立即使用 →
+                    </button>
+                </div>
+                
+                <!-- Card 4: CRM -->
+                <div class="feature-card rounded-2xl p-8 card-glow hover-lift cursor-pointer">
+                    <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
+                         style="background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);">
+                        <span class="text-4xl">👥</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-slate-800 mb-4">CRM协同 Agent</h3>
+                    <p class="text-slate-600 mb-6 leading-relaxed">
+                        智能标签体系、客户生命周期追踪、动态激活提醒，让客户管理更轻松
+                    </p>
+                    <ul class="space-y-3">
+                        <li class="flex items-center text-slate-600">
+                            <span class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                <span class="text-green-600 text-sm">✓</span>
+                            </span>
+                            智能标签
+                        </li>
+                        <li class="flex items-center text-slate-600">
+                            <span class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                <span class="text-green-600 text-sm">✓</span>
+                            </span>
+                            生命周期
+                        </li>
+                        <li class="flex items-center text-slate-600">
+                            <span class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                <span class="text-green-600 text-sm">✓</span>
+                            </span>
+                            数据分析
+                        </li>
+                    </ul>
+                    <button class="w-full mt-6 py-3 rounded-xl font-semibold text-white"
+                            style="background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);">
+                        立即使用 →
+                    </button>
+                </div>
+                
+                <!-- Card 5: Compliance -->
+                <div class="feature-card rounded-2xl p-8 card-glow hover-lift cursor-pointer">
+                    <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
+                         style="background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);">
+                        <span class="text-4xl">🛡️</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-slate-800 mb-4">合规管理 Agent</h3>
+                    <p class="text-slate-600 mb-6 leading-relaxed">
+                        AI内容标识、敏感词过滤、话术审核、区块链存证，确保合规运营
+                    </p>
+                    <ul class="space-y-3">
+                        <li class="flex items-center text-slate-600">
+                            <span class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                <span class="text-green-600 text-sm">✓</span>
+                            </span>
+                            内容标识
+                        </li>
+                        <li class="flex items-center text-slate-600">
+                            <span class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                <span class="text-green-600 text-sm">✓</span>
+                            </span>
+                            敏感词过滤
+                        </li>
+                        <li class="flex items-center text-slate-600">
+                            <span class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                <span class="text-green-600 text-sm">✓</span>
+                            </span>
+                            话术审核
+                        </li>
+                    </ul>
+                    <button class="w-full mt-6 py-3 rounded-xl font-semibold text-white"
+                            style="background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);">
+                        立即使用 →
+                    </button>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="feature-card rounded-2xl p-8 card-glow hover-lift cursor-pointer border-2 border-dashed"
+                     style="border-color: #667eea;">
+                    <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
+                         style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <span class="text-4xl">⚡</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-slate-800 mb-4">快速开始</h3>
+                    <p class="text-slate-600 mb-6">
+                        选择一个任务快速开始，或查看最近操作
+                    </p>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <button class="py-2 px-4 rounded-lg border hover:shadow-md transition-all text-sm font-medium"
+                                style="border-color: #667eea; color: #667eea;">
+                            📞 新建外呼
+                        </button>
+                        <button class="py-2 px-4 rounded-lg border hover:shadow-md transition-all text-sm font-medium"
+                                style="border-color: #667eea; color: #667eea;">
+                            📊 采集数据
+                        </button>
+                        <button class="py-2 px-4 rounded-lg border hover:shadow-md transition-all text-sm font-medium"
+                                style="border-color: #667eea; color: #667eea;">
+                            ✍️ 生成文案
+                        </button>
+                        <button class="py-2 px-4 rounded-lg border hover:shadow-md transition-all text-sm font-medium"
+                                style="border-color: #667eea; color: #667eea;">
+                            📈 数据报表
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="py-12" style="background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center"
+                         style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <span class="text-2xl">🧠</span>
+                    </div>
+                    <span class="text-xl font-bold text-white">房探AI</span>
+                </div>
+                <p class="text-slate-400 text-sm">
+                    © 2026 房探AI. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

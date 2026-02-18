@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fangtan-redis
+  namespace: fangtan-ai
+  labels:
+    app: fangtan-redis
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fangtan-redis
+  template:
+    metadata:
+      labels:
+        app: fangtan-redis
+        version: v1
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "6379"
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: fangtan-secrets
+                  key: REDIS_PASSWORD
+          ports:
+            - containerPort: 6379
+              name: tcp-redis
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "2000m"
+              memory: "4Gi"
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+      volumes:
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: fangtan-redis-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fangtan-redis-pvc
+  namespace: fangtan-ai
+  labels:
+    app: fangtan-redis
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: cloud-ssd
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fangtan-redis
+  namespace: fangtan-ai
+  labels:
+    app: fangtan-redis
+spec:
+  type: ClusterIP
+  ports:
+    - port: 6379
+      targetPort: 6379
+      protocol: TCP
+      name: tcp-redis
+  selector:
+    app: fangtan-redis

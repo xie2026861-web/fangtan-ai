@@ -5,12 +5,11 @@ import { APP_GUARD } from '@nestjs/core';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { CustomersModule } from './customers/customers.module';
-import { ReachModule } from './reach/reach.module';
-import { ContentModule } from './content/content.module';
+import { DataCollectionModule } from './data-collection/data-collection.module';
+import { SmartReachModule } from './smart-reach/smart-reach.module';
+import { ContentGenerationModule } from './content-generation/content-generation.module';
 import { CrmModule } from './crm/crm.module';
 import { ComplianceModule } from './compliance/compliance.module';
-import { AnalyticsModule } from './analytics/analytics.module';
 import { HealthModule } from './health/health.module';
 
 @Module({
@@ -35,12 +34,11 @@ import { HealthModule } from './health/health.module';
     // 功能模块
     AuthModule,
     UsersModule,
-    CustomersModule,
-    ReachModule,
-    ContentModule,
+    DataCollectionModule,
+    SmartReachModule,
+    ContentGenerationModule,
     CrmModule,
     ComplianceModule,
-    AnalyticsModule,
 
     // 健康检查模块
     HealthModule,

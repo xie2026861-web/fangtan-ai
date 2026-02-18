@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>房探AI - 前端预览</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 16px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #1a1a2e;
+        }
+        
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 32px;
+        }
+        
+        .nav a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav a:hover {
+            color: #667eea;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 50%;
+        }
+        
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 80px 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hero h1 {
+            font-size: 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+        
+        .hero p {
+            font-size: 20px;
+            color: #666;
+            margin-bottom: 40px;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .btn {
+            padding: 16px 40px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 32px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+        
+        .stat-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #1a1a2e;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .stat-trend {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        
+        .trend-up {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .trend-down {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        /* Agent Cards */
+        .agents-section {
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 32px;
+            color: white;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        
+        .agent-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+        
+        .agent-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+        
+        .agent-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin-bottom: 20px;
+        }
+        
+        .agent-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #1a1a2e;
+            margin-bottom: 12px;
+        }
+        
+        .agent-desc {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .agent-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .feature-tag {
+            padding: 6px 12px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .agent-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .agent-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+        
+        .quick-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1a1a2e;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+        
+        .quick-btn {
+            padding: 16px;
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            color: #495057;
+        }
+        
+        .quick-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">🧠</div>
+                <span>房探AI</span>
+            </div>
+            <nav class="nav">
+                <a href="#features">功能</a>
+                <a href="#pricing">价格</a>
+                <a href="#docs">文档</a>
+            </nav>
+            <div class="user-info">
+                <span>管理员</span>
+                <div class="avatar"></div>
+            </div>
+        </header>
+        
+        <!-- Hero -->
+        <section class="hero">
+            <h1>让房产营销更智能</h1>
+            <p>5大AI Agent协同作战，为房产经纪人提供智能获客、精准触达、内容生成等一站式解决方案</p>
+            <div class="cta-buttons">
+                <button class="btn btn-primary">免费开始使用 →</button>
+                <button class="btn btn-secondary">了解更多</button>
+            </div>
+        </section>
+        
+        <!-- Stats -->
+        <section class="stats">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">👥</div>
+                <div class="stat-value">1,256</div>
+                <div class="stat-label">今日新增客户</div>
+                <span class="stat-trend trend-up">+23%</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;">📞</div>
+                <div class="stat-value">356</div>
+                <div class="stat-label">今日外呼</div>
+                <span class="stat-trend trend-up">+15%</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%); color: white;">🎯</div>
+                <div class="stat-value">42</div>
+                <div class="stat-label">意向客户</div>
+                <span class="stat-trend trend-up">+8%</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">📈</div>
+                <div class="stat-value">12.5%</div>
+                <div class="stat-label">转化率</div>
+                <span class="stat-trend trend-up">+2.3%</span>
+            </div>
+        </section>
+        
+        <!-- Agent Cards -->
+        <section class="agents-section">
+            <h2 class="section-title">🤖 AI Agent 能力中心</h2>
+            <div class="agents-grid">
+                <!-- Data Collection Agent -->
+                <div class="agent-card">
+                    <div class="agent-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">📊</div>
+                    <h3 class="agent-title">数据采集 Agent</h3>
+                    <p class="agent-desc">多源数据采集、交叉核验，联系方式有效率≥95%，精准定位潜在客户</p>
+                    <div class="agent-features">
+                        <span class="feature-tag">POI数据</span>
+                        <span class="feature-tag">平台数据</span>
+                        <span class="feature-tag">行为数据</span>
+                        <span class="feature-tag">交叉核验</span>
+                    </div>
+                    <button class="agent-btn">
+                        立即使用 →
+                    </button>
+                </div>
+                
+                <!-- Smart Reach Agent -->
+                <div class="agent-card">
+                    <div class="agent-icon" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;">📞</div>
+                    <h3 class="agent-title">智能触达 Agent</h3>
+                    <p class="agent-desc">AI外呼支持10+轮对话，实时意向评分，智能转人工，提升触达效率5倍</p>
+                    <div class="agent-features">
+                        <span class="feature-tag">AI外呼</span>
+                        <span class="feature-tag">企微触达</span>
+                        <span class="feature-tag">短信群发</span>
+                        <span class="feature-tag">意向评分</span>
+                    </div>
+                    <button class="agent-btn" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                        立即使用 →
+                    </button>
+                </div>
+                
+                <!-- Content Generation Agent -->
+                <div class="agent-card">
+                    <div class="agent-icon" style="background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%); color: white;">✍️</div>
+                    <h3 class="agent-title">内容生成 Agent</h3>
+                    <p class="agent-desc">智能文案生成、虚拟软装效果图、多平台一键分发，让内容创作更高效</p>
+                    <div class="agent-features">
+                        <span class="feature-tag">文案生成</span>
+                        <span class="feature-tag">图片生成</span>
+                        <span class="feature-tag">视频脚本</span>
+                        <span class="feature-tag">多平台分发</span>
+                    </div>
+                    <button class="agent-btn" style="background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);">
+                        立即使用 →
+                    </button>
+                </div>
+                
+                <!-- CRM Agent -->
+                <div class="agent-card">
+                    <div class="agent-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">👥</div>
+                    <h3 class="agent-title">CRM协同 Agent</h3>
+                    <p class="agent-desc">智能标签体系、客户生命周期追踪、动态激活提醒，让客户管理更轻松</p>
+                    <div class="agent-features">
+                        <span class="feature-tag">客户标签</span>
+                        <span class="feature-tag">生命周期</span>
+                        <span class="feature-tag">跟进提醒</span>
+                        <span class="feature-tag">数据分析</span>
+                    </div>
+                    <button class="agent-btn" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                        立即使用 →
+                    </button>
+                </div>
+                
+                <!-- Compliance Agent -->
+                <div class="agent-card">
+                    <div class="agent-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white;">🛡️</div>
+                    <h3 class="agent-title">合规管理 Agent</h3>
+                    <p class="agent-desc">AI内容标识、敏感词过滤、话术审核、区块链存证，确保合规运营</p>
+                    <div class="agent-features">
+                        <span class="feature-tag">内容标识</span>
+                        <span class="feature-tag">敏感词过滤</span>
+                        <span class="feature-tag">话术审核</span>
+                        <span class="feature-tag">存证追溯</span>
+                    </div>
+                    <button class="agent-btn" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                        立即使用 →
+                    </button>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="agent-card" style="border: 3px dashed #667eea; background: #f8f9fa;">
+                    <div class="agent-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">⚡</div>
+                    <h3 class="agent-title">快速开始</h3>
+                    <p class="agent-desc">选择一个任务快速开始，或查看最近操作</p>
+                    <div class="quick-grid" style="grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px;">
+                        <button class="quick-btn">📞 新建外呼</button>
+                        <button class="quick-btn">📊 采集数据</button>
+                        <button class="quick-btn">✍️ 生成文案</button>
+                        <button class="quick-btn">📈 数据报表</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-logo">
+                🧠 房探AI
+            </div>
+            <p>© 2026 房探AI. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>

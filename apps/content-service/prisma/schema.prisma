@@ -1,0 +1,41 @@
+generator client { provider = "prisma-client-js" }
+datasource db { provider = "postgresql"; url = env("DATABASE_URL") }
+
+model ContentTemplate {
+  id          String   @id @default(uuid())
+  name        String   // 模板名称
+  type        String   // 类型: 朋友圈, 软文, 海报, 视频文案
+  content     String   // 模板内容
+  variables   String[] // 变量列表
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model GeneratedContent {
+  id          String   @id @default(uuid())
+  templateId  String?  // 模板ID
+  type        String   // 内容类型
+  title       String?  // 标题
+  content     String   // 生成内容
+  images      String[] // 图片URL
+  properties  Json?    // 相关房源
+  status      String   @default("generated") // generated, approved, published
+  usageCount  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ContentCampaign {
+  id          String   @id @default(uuid())
+  name        String   // 活动名称
+  type        String   // 活动类型
+  templates   String[] // 模板ID列表
+  targetAudience Json?  // 目标人群
+  schedule    Json?    // 排期
+  status      String   @default("draft") // draft, active, paused, completed
+  startDate   DateTime?
+  endDate     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

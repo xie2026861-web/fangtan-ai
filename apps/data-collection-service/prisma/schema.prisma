@@ -1,0 +1,169 @@
+// Prisma Schema for Data Collection Service
+// 房探AI - 数据采集服务数据模型
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 房产数据源枚举
+enum DataSource {
+  LIANJIA
+  BEIKE
+  FANG
+  ANJUKE
+  DIY
+  MANUAL
+}
+
+// 房产状态枚举
+enum PropertyStatus {
+  ON_SALE
+  PENDING
+  SOLD
+  RENTED
+  OFF_MARKET
+}
+
+// 采集任务状态
+enum CollectionTaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+// 房产基础信息表
+model Property {
+  id                String         @id @default(uuid())
+  externalId        String         @unique // 外部系统ID
+  source            DataSource     // 数据来源
+  title             String         // 房源标题
+  description       String?        // 房源描述
+  propertyType      String         // 房产类型: 住宅, 公寓, 商铺, 写字楼
+  transactionType   String         // 交易类型: 出售, 出租
+  price             Float          // 价格
+  priceUnit         String         @default("万元") // 价格单位
+  area              Float          // 面积(平方米)
+  bedrooms          Int?           // 卧室数量
+  bathrooms         Int?           // 卫生间数量
+  floor             Int?           // 楼层
+  totalFloors       Int?           // 总楼层
+  yearBuilt         Int?           // 建造年份
+  renovation        String?        // 装修情况
+  direction         String?        // 朝向
+  district          String?        // 区域
+  city              String         @default("上海") // 城市
+  address           String?        // 详细地址
+  latitude          Float?
+  longitude         Float?
+  status            PropertyStatus @default(ON_SALE)
+  images            String[]       // 图片URL列表
+  tags              String[]       // 标签
+  agentName         String?        // 经纪人姓名
+  agentPhone        String?        // 经纪人电话
+  agencyName        String?        // 经纪公司
+  viewedCount       Int            @default(0)
+  collectedAt        DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  
+  @@index([source, status])
+  @@index([city, district])
+  @@index([price])
+  @@index([propertyType])
+}
+
+// 采集任务表
+model CollectionTask {
+  id              String               @id @default(uuid())
+  name            String               // 任务名称
+  description     String?              // 任务描述
+  source          DataSource           // 数据来源
+  config          Json                 // 采集配置: URL, 区域, 价格范围等
+  status          CollectionTaskStatus @default(PENDING)
+  priority        Int                  @default(1) // 优先级
+  totalPages      Int?                 // 总页数
+  collectedPages  Int                  @default(0)
+  totalItems      Int                  @default(0)
+  collectedItems  Int                  @default(0)
+  errorMessage    String?
+  startedAt       DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  
+  @@index([status])
+  @@index([source])
+  @@index([createdAt])
+}
+
+// 区域价格统计表
+model PriceStatistics {
+  id          String   @id @default(uuid())
+  district    String   // 区域
+  city        String   @default("上海")
+  propertyType String  // 房产类型
+  avgPrice    Float    // 平均价格
+  minPrice    Float    // 最低价格
+  maxPrice    Float    // 最高价格
+  count       Int      // 房源数量
+  recordedAt  DateTime @default(now())
+  
+  @@unique([district, city, propertyType, recordedAt])
+  @@index([city, district])
+}
+
+// 采集日志表
+model CollectionLog {
+  id          String   @id @default(uuid())
+  taskId      String?  // 关联任务ID
+  source      DataSource
+  level       String   // log, warn, error
+  message     String
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  
+  @@index([taskId])
+  @@index([source])
+  @@index([createdAt])
+}
+
+// 客户数据表
+model Customer {
+  id              String   @id @default(uuid())
+  phone           String   @unique // 手机号
+  name            String?  // 姓名
+  wechat          String?  // 微信
+  intentionLevel  Int      @default(0) // 意向等级 0-5
+  propertyTypes   String[] // 感兴趣的房产类型
+  budgetRange     String?  // 预算范围
+  preferredAreas  String[] // 意向区域
+  tags            String[] // 标签
+  source          DataSource? // 数据来源
+  remark          String?  // 备注
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([phone])
+  @@index([intentionLevel])
+}
+
+// 客户行为记录表
+model CustomerBehavior {
+  id          String     @id @default(uuid())
+  customerId  String     // 客户ID
+  behaviorType String    // 浏览, 咨询, 带看, 成交
+  propertyId  String?    // 相关房源ID
+  description String?    // 行为描述
+  metadata    Json?      // 附加数据
+  createdAt   DateTime   @default(now())
+  
+  @@index([customerId])
+  @@index([behaviorType])
+  @@index([createdAt])
+}

@@ -10,8 +10,289 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ==================== 用户模型 ====================
-model User {
+// ==================== 数据采集模型 ====================
+model DataCollectionTask {
+  id              String        @id @default(uuid())
+  userId         String
+  
+  // 任务配置
+  sourceIds       String[]
+  region          String?
+  propertyType    String?
+  keywords        String[]
+  maxRecords      Int           @default(1000)
+  priority        String        @default("normal")
+  
+  // 状态
+  status          TaskStatus    @default(PENDING)
+  progress        Float         @default(0)
+  
+  // 结果
+  resultStats     Json?
+  errorMessage    String?
+  
+  // 时间
+  startedAt       DateTime?
+  completedAt     DateTime?
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  @@index([userId])
+  @@index([status])
+}
+
+enum TaskStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+// ==================== 采集数据模型 ====================
+model CollectedData {
+  id              String        @id @default(uuid())
+  
+  // 来源
+  source          String
+  
+  // 基本信息
+  title           String
+  description     String?
+  price           Float?
+  area            Float?
+  
+  // 位置
+  region          String?
+  district        String?
+  address         String?
+  
+  // 联系方式
+  phone           String?
+  agent           String?
+  
+  // 类型
+  propertyType    String?
+  
+  // 原始数据
+  rawData         Json?
+  collectedAt     DateTime      @default(now())
+  
+  @@index([source])
+  @@index([region])
+  @@index([price])
+}
+
+// ==================== AI外呼记录模型 ====================
+model CallRecord {
+  id              String        @id @default(uuid())
+  taskId          String
+  customerId      String?
+  
+  // 基本信息
+  phone           String
+  duration        Int           // 秒
+  
+  // AI分析
+  intentionLevel  String?
+  sentiment       String?
+  summary         String?
+  
+  // 对话
+  transcript      Json?
+  
+  // 状态
+  status          String        @default("completed")
+  
+  // 时间
+  startedAt       DateTime
+  endedAt        DateTime
+  
+  @@index([taskId])
+  @@index([customerId])
+}
+
+// ==================== 短信记录模型 ====================
+model SmsRecord {
+  id              String        @id @default(uuid())
+  taskId          String
+  customerId      String
+  
+  phone           String
+  content         String
+  status          String
+  errorMessage    String?
+  sentAt          DateTime?
+  
+  createdAt       DateTime      @default(now())
+  
+  @@index([taskId])
+}
+
+// ==================== 企业微信记录模型 ====================
+model WechatRecord {
+  id              String        @id @default(uuid())
+  taskId          String
+  customerId      String
+  
+  content         String
+  status          String
+  errorMessage    String?
+  sentAt          DateTime?
+  
+  createdAt       DateTime      @default(now())
+  
+  @@index([taskId])
+}
+
+// ==================== 内容生成任务模型 ====================
+model ContentGenerationTask {
+  id              String        @id @default(uuid())
+  userId         String
+  
+  // 配置
+  type            String
+  templateId      String?
+  config          Json
+  
+  // 状态
+  status          TaskStatus    @default(PENDING)
+  result          Json?
+  
+  // 时间
+  startedAt       DateTime?
+  completedAt     DateTime?
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  @@index([userId])
+  @@index([status])
+}
+
+// ==================== 生成内容库模型 ====================
+model GeneratedContent {
+  id              String        @id @default(uuid())
+  userId         String
+  
+  // 内容信息
+  type            String
+  content         String
+  images          String[]
+  platform        String[]
+  metadata        Json?
+  
+  createdAt       DateTime      @default(now())
+  
+  @@index([userId])
+  @@index([type])
+}
+
+// ==================== 敏感词模型 ====================
+model SensitiveWord {
+  id              String        @id @default(uuid())
+  word            String        @unique
+  category        String
+  level           String        @default("warning")
+  replacement     String?
+  description     String?
+  isActive        Boolean       @default(true)
+  
+  createdBy       String
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  @@index([category])
+  @@index([isActive])
+}
+
+// ==================== 合规日志模型 ====================
+model ComplianceLog {
+  id              String        @id @default(uuid())
+  userId         String
+  
+  // 内容
+  content         String
+  result          String
+  riskLevel       String
+  
+  // 详细信息
+  issues          Json?
+  suggestions     Json?
+  
+  checkedAt       DateTime      @default(now())
+  
+  @@index([userId])
+  @@index([result])
+  @@index([riskLevel])
+}
+
+// ==================== 话术模板模型 ====================
+model ScriptTemplate {
+  id              String        @id @default(uuid())
+  userId         String
+  
+  // 基本信息
+  name            String
+  content         String
+  type            String
+  tags            String[]
+  
+  // 合规状态
+  complianceStatus String       @default("pending")
+  complianceIssues Json?
+  complianceCheckedAt DateTime?
+  
+  // 版本
+  version         Int           @default(1)
+  isActive        Boolean       @default(true)
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  @@index([userId])
+  @@index([type])
+}
+
+// ==================== 跟进记录模型 ====================
+model FollowUp {
+  id              String        @id @default(uuid())
+  customerId      String
+  userId         String
+  
+  type            String
+  content         String
+  nextFollowUp    DateTime?
+  
+  createdAt       DateTime      @default(now())
+  
+  @@index([customerId])
+  @@index([userId])
+}
+
+// ==================== 外部数据源模型 ====================
+model ExternalDataSource {
+  id              String        @id @default(uuid())
+  
+  // 配置
+  name            String
+  type            String
+  baseUrl         String
+  apiKey          String?
+  isEnabled       Boolean       @default(true)
+  config          Json?
+  
+  // 统计
+  lastSyncAt     DateTime?
+  recordCount     Int           @default(0)
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  @@index([type])
+  @@index([isEnabled])
+}
   id                String    @id @default(uuid())
   email             String    @unique
   password          String

@@ -5,7 +5,8 @@
   "private": true,
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "tests"
   ],
   "scripts": {
     "dev": "npm run dev --workspaces",
@@ -13,14 +14,26 @@
     "test": "npm run test --workspaces",
     "test:unit": "npm run test:unit --workspaces",
     "test:integration": "npm run test:integration --workspaces",
-    "test:e2e": "npm run test:e2e --workspaces",
+    "test:e2e": "cd tests && npm install && npx playwright test",
+    "test:e2e:ui": "cd tests && npx playwright test --ui",
+    "test:e2e:headed": "cd tests && npx playwright test --headed",
+    "test:e2e:ci": "cd tests && npx playwright test --project=chromium --project=firefox --reporter=line",
+    "test:e2e:report": "cd tests && npx playwright show-report",
+    "test:e2e:install": "cd tests && npx playwright install",
+    "test:e2e:install-deps": "cd tests && npx playwright install-deps",
     "test:coverage": "npm run test:coverage --workspaces",
     "lint": "npm run lint --workspaces",
     "lint:fix": "npm run lint:fix --workspaces",
     "clean": "npm run clean --workspaces",
     "docker:up": "docker-compose -f docker-compose.local.yml up -d",
     "docker:down": "docker-compose -f docker-compose.local.yml down",
-    "docker:logs": "docker-compose -f docker-compose.local.yml logs -f"
+    "docker:logs": "docker-compose -f docker-compose.local.yml logs -f",
+    "start": "npm run start --workspaces",
+    "start:dev": "npm run start:dev --workspaces",
+    "deploy": "./deploy.sh",
+    "deploy:local": "./deploy.sh local",
+    "deploy:staging": "./deploy.sh staging",
+    "deploy:production": "./deploy.sh production"
   },
   "engines": {
     "node": ">=20.0.0"
